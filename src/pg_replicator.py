@@ -3512,12 +3512,22 @@ class ReplicationManager:
         print("CREATING SANE VIEWS")
         print("=" * 60)
         
+        # Open both connections (needed for table discovery and view creation)
+        try:
+            self.open_DAO_connection()
+            self.open_postgresql_connection()
+        except Exception as e:
+            logger.error(f"create_sane_views: Failed to open connections: {e}")
+            print(f"Error: Failed to open connections: {e}")
+            self.exit_program(1, "Connection failed")
+        
         # Get all tables to process (same as replicate_schema would have used)
         table_names = self.get_all_tables_to_process()
         
         if not table_names:
             logger.warning("create_sane_views: No tables found to create views for")
             print("  No tables found - nothing to do")
+            self.close_connections()
             return
         
         views_created = 0
@@ -3600,6 +3610,8 @@ FROM {safe_original_table}
         print("=" * 60)
         
         logger.info(f"create_sane_views: Completed - {views_created} views created, {errors} errors")
+        
+        self.close_connections()
     
     def create_views_only(self):
         """Create sane views on an existing PostgreSQL database based on MS Access tables.
@@ -4045,13 +4057,13 @@ def main():
                         help='Skip copying non-volatile tables when row counts match (unless --slow is also enabled)')
     parser.add_argument('--simple-names', action='store_true',
                         help='Create tables and columns with simple lowercase names (no quoted identifiers). Can only be used with --schema.')
+    parser.add_argument('--create-views', action='store_true',
+                        help='Create sane views on existing database (no schema changes, no data copy). When used with --schema, creates schema THEN views.')
     
     # Mutually exclusive action group
     action_group = parser.add_mutually_exclusive_group()
     action_group.add_argument('-S', '--schema', action='store_true', 
                               help='Drop and recreate database, then replicate schema ONLY')
-    action_group.add_argument('--create-views', action='store_true',
-                              help='Create sane views on existing database (no schema changes, no data copy). When used with --schema, creates schema THEN views.')
     action_group.add_argument('--adjust-ms-access', action='store_true',
                               help='Adjust MS Access schema (add AutoNumber primary key to tables without PK)')
     action_group.add_argument('-l', '--list', action='store_true', 
