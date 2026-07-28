@@ -44,6 +44,7 @@ Thumbs.db
 desktop.ini
 
 # Project specific
+AGENTS.md
 *.db
 *.sqlite
 *.accdb

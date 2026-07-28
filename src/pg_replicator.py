@@ -983,7 +983,21 @@ class ReplicationManager:
                 conflict_clause = f"ON CONFLICT ({', '.join(conflict_columns)}) DO UPDATE SET {update_set}"
         
         # Open recordset for reading data
-        recordset = tdef.OpenRecordset()
+        try:
+            recordset = tdef.OpenRecordset()
+        except Exception as e:
+            logger.error(f"Failed to open recordset for table {table_name}: {e}")
+            logger.error(f"This may be caused by complex field types (Attachments, MultiValue) in the table.")
+            logger.error(f"Skipping table {table_name}")
+            print(f"ERROR: Cannot open recordset for {table_name} - table contains unsupported complex fields. Skipping.")
+            self.validation_results[table_name] = {
+                'source_count': source_row_count,
+                'target_count': target_row_count,
+                'matched': False,
+                'difference': source_row_count - target_row_count,
+                'error': str(e)
+            }
+            return
         
         if start_position > 0:
             try:
@@ -1002,7 +1016,10 @@ class ReplicationManager:
             valid_columns = []
             
             for col in table_info['columns']:
-                dao_val = recordset.Fields[col['original_name']].value
+                pos = col['field_position']
+                if pos >= recordset.Fields.Count:
+                    continue
+                dao_val = recordset.Fields[pos].value
                 py_val = convert_dao_value_to_python(dao_val)
                 
                 # Apply transformation
@@ -1494,15 +1511,15 @@ class ReplicationManager:
                 try:
                     if idx.Primary:
                         index_info['primary'] = True
-                except:
-                    pass
+                except Exception as e:
+                    logger.warning(f"  Index '{index_info['name']}' idx.Primary access raised: {e}")
             
             if has_unique:
                 try:
                     if idx.Unique:
                         index_info['unique'] = True
-                except:
-                    pass
+                except Exception as e:
+                    logger.warning(f"  Index '{index_info['name']}' idx.Unique access raised: {e}")
             
             for j in range(idx.Fields.Count):
                 fld = idx.Fields[j]
@@ -1754,6 +1771,11 @@ class ReplicationManager:
         
         for i in range(tdef.Fields.Count):
             fld = tdef.Fields[i]
+            # Skip complex field types (Attachment=101, MultiValue=102-109)
+            # These cannot be accessed as scalar values from a table-type recordset
+            if fld.Type >= 101:
+                logger.info(f"  Skipping complex field '{decode_sketchy_utf16(fld.Name)}' (type {fld.Type}) in table {table_name}")
+                continue
             orig_name = decode_sketchy_utf16(fld.Name)
             safe_name = sanitise_func(orig_name)
             
@@ -1761,7 +1783,8 @@ class ReplicationManager:
                 'original_name': orig_name,
                 'name': safe_name,
                 'type': self.convert_ms_datatype_postgresql(fld.Type, fld, orig_name),
-                'required': (fld.Required if hasattr(fld, 'Required') else False)
+                'required': (fld.Required if hasattr(fld, 'Required') else False),
+                'field_position': i  # Original position in tdef.Fields for recordset indexing
             }
             table_info['columns'].append(col_info)
         
@@ -1846,7 +1869,7 @@ class ReplicationManager:
         unquoted_table_name = safe_table_name.strip('"')
         
         # Sanitise the column names to match what PostgreSQL actually has
-        sanitised_columns = [sanitise_func(col) for col in columns]
+        sanitised_columns = [sanitise_func(col).strip('"') for col in columns]
         columns_lower = [col.lower() for col in sanitised_columns]
         
         pk_columns_sql = f"""
@@ -1876,7 +1899,7 @@ class ReplicationManager:
         unquoted_table_name = safe_table_name.strip('"')
         
         # Sanitise the column names to match what PostgreSQL actually has
-        sanitised_columns = [sanitise_func(col) for col in columns]
+        sanitised_columns = [sanitise_func(col).strip('"') for col in columns]
         columns_lower = [col.lower() for col in sanitised_columns]
         
         unique_check_sql = f"""
