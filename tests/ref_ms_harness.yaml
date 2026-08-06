@@ -1,0 +1,9 @@
+DAO:
+  database: "C:\\Users\\ronoh\\TestHarness.accdb"
+
+sqlserver:
+  host: "localhost"
+  port: 1433
+  database: "ms_ref_harness"
+  user: "replicator"
+  password: "Syhunkea$1954"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "$Revision: 1.40 $"
+__version__ = "0.3.0"  # VERSION_MARKER
 
 import sys
 import os
@@ -99,6 +99,9 @@ def convert_dao_value_to_postgresql_literal(value):
 def convert_dao_value_to_python(value):
     if value is None:
         return None
+    # Strip Access dbGUID wrapper: {guid {...}} → {...}
+    if isinstance(value, str) and value.startswith('{guid ') and value.endswith('}'):
+        value = value[6:-1]  # remove "{guid " prefix and "}" suffix, leaving {xxx}
     if hasattr(value, 'year') and hasattr(value, 'month') and hasattr(value, 'day'):
         if hasattr(value, 'hour') and hasattr(value, 'minute') and hasattr(value, 'second'):
             try:

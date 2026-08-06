@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "$Revision: 1.12 $"
+__version__ = "0.3.0"  # VERSION_MARKER
 
 import sys
 import os
@@ -96,6 +96,9 @@ def convert_dao_value_to_sqlserver_literal(value):
 def convert_dao_value_to_python(value):
     if value is None:
         return None
+    # Strip Access dbGUID wrapper: {guid {...}} → {...}
+    if isinstance(value, str) and value.startswith('{guid ') and value.endswith('}'):
+        value = value[6:-1]  # remove "{guid " prefix and "}" suffix, leaving {xxx}
     if hasattr(value, 'year') and hasattr(value, 'month') and hasattr(value, 'day'):
         if hasattr(value, 'hour') and hasattr(value, 'minute') and hasattr(value, 'second'):
             try:
@@ -3937,10 +3940,20 @@ FROM {safe_original_table}
         
         if self.full_refresh:
             print("\nFULL REFRESH mode - dropping all tables...")
-            for table_info in reversed(tables_to_process):
+            # Drop foreign keys first so tables can be dropped in any order.
+            fk_config = self.parameters.get('foreignkeys', {})
+            for fk_name, fk_info in fk_config.items():
+                child_table = fk_info.get('base_table', '')
+                safe_child = self.get_sanitise_function()(child_table)
+                safe_fk = self.get_sanitise_function()(fk_name)
+                drop_fk_sql = f"ALTER TABLE {safe_child} DROP CONSTRAINT IF EXISTS {safe_fk}"
+                try:
+                    self.ss_sql_execute(drop_fk_sql)
+                    self.ss_conn.commit()
+                except Exception:
+                    pass  # FK may not exist yet
+            for table_info in tables_to_process:
                 safe_name = table_info['safe_name']
-                # SQL Server doesn't support CASCADE on DROP TABLE
-                # Need to drop foreign keys first - handled by dropping in reverse dependency order
                 drop_sql = f"DROP TABLE IF EXISTS {safe_name}"
                 self.ss_sql_execute(drop_sql)
                 self.ss_conn.commit()

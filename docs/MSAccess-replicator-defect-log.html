@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Defect Log — MS Access Replicator</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --accent-light: #eff6ff;
+    --border: #e2e8f0;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  nav {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 56px;
+  }
+  nav .brand {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--accent);
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    padding: 0.4rem 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  nav a:hover, nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .hero {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #6366f1 100%);
+    color: #fff;
+    padding: 3rem 1.5rem 2rem;
+    text-align: center;
+  }
+  .hero h1 { font-size: 2rem; margin-bottom: 0.4rem; font-weight: 800; }
+  .hero p { font-size: 1.05rem; color: #bfdbfe; max-width: 640px; margin: 0 auto; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h2 { color: var(--accent); margin: 2rem 0 0.75rem; font-size: 1.3rem; padding-bottom: 0.3rem; border-bottom: 2px solid var(--accent-light); }
+  p { color: var(--text-muted); margin-bottom: 1rem; font-size: 0.94rem; line-height: 1.7; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.8rem;
+    font-size: 0.88rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  th {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 2px solid var(--accent);
+  }
+  td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+  .badge-fix { background: #dcfce7; color: #166534; }
+  .badge-open { background: #fef3c7; color: #92400e; }
+  .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0;
+    border-radius: var(--radius);
+    font-size: 0.92rem;
+  }
+  .callout strong { color: var(--accent); }
+  footer {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  code {
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Consolas", monospace;
+  }
+  .affected { font-size: 0.82rem; margin-top: 0.2rem; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://replicator.sentuny.com/" class="brand">MS Access Replicator</a>
+  <a href="#" class="active">Defect Log</a>
+</nav>
+
+<div class="hero">
+  <h1>Defect Log</h1>
+  <p>Known defects discovered and resolved during development and testing of the MS Access Replicator — covering all three target backends (PostgreSQL, MS SQL Server, MySQL/MariaDB).</p>
+</div>
+
+<div class="container">
+
+  <h2>Active Defects (Uncommitted — Fixed in Working Tree)</h2>
+  <p>These defects have been fixed in <code>src/*.py</code> but are not yet committed. Tested and verified via TestHarness.accdb (8-table type-coverage suite).</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Defect</th>
+        <th>Root Cause</th>
+        <th>Observed Behavior</th>
+        <th>Verification</th>
+        <th>Status / Resolution</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>dbGUID wrapper <code>{guid {...}}</code> not stripped — all three replicators
+          <div class="affected">Affected: PG, MSSQL, MySQL</div>
+        </td>
+        <td>DAO returns GUID values wrapped as <code>{guid {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}</code>. None of the three replicators stripped this wrapper before passing the value to the target database. PostgreSQL <code>UUID</code> type and MSSQL <code>UNIQUEIDENTIFIER</code> silently rejected these values, while MySQL <code>CHAR(36)</code> could not fit the 42-character wrapper.</td>
+        <td>PGT01 <code>guid_types</code>: 0 rows inserted (all three rejected). MST01: same — 0 rows. MYT01: INSERT failed with "Data too long". Validation showed Access: 3, target: 0 for all three backends.</td>
+        <td>After fix, PGT01 8/8, MST01 8/8, MYT01 6/8 (two remaining MySQL-specific issues below). <code>guid_types</code> now inserts all 3 rows with clean GUID values in all three backends.</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (uncommitted)</span><br>
+          <code>convert_dao_value_to_python()</code> in all three <code>src/*.py</code>: strips <code>{guid </code> prefix and trailing <code>}</code> — <code>value = value[6:-1]</code><br>
+          <strong>Design:</strong> Fix applied in <code>convert_dao_value_to_python()</code> — one location for all three replicators, before backend-specific literal conversion.
+        </td>
+      </tr>
+      <tr>
+        <td>MySQL GUID braces overflow CHAR(36)
+          <div class="affected">Affected: MySQL only</div>
+        </td>
+        <td>After stripping the <code>{guid {...}}</code> wrapper, the GUID still had curly braces — <code>{12345678-ABCD-EF01-2345-6789ABCDEF01}</code> is 38 characters. MySQL <code>CHAR(36)</code> only holds 36 characters. PostgreSQL <code>UUID</code> and MSSQL <code>UNIQUEIDENTIFIER</code> are native types that auto-normalize braces natively — MySQL has no such type.</td>
+        <td>MYT01 <code>guid_types</code>: 2 of 3 INSERTs failed with error 1406 "Data too long for column 'col_guid'". Only rows without braces survived.</td>
+        <td>After fix, MYT01 <code>guid_types</code>: 3/3 rows inserted. Validation: Access: 3, MySQL: 3 ✓</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (uncommitted)</span><br>
+          <code>convert_dao_value_to_python()</code> in <code>my_replicator.py</code>: after <code>{guid {...}}</code> strip, also strips plain <code>{</code> <code>}</code> braces from 38-character GUID-like strings — <code>value = value[1:-1]</code>
+        </td>
+      </tr>
+      <tr>
+        <td>MySQL TINYINT signed overflow for Access Byte
+          <div class="affected">Affected: MySQL only</div>
+        </td>
+        <td>Access DAO type 2 (<code>dbByte</code>) is an unsigned byte (0–255). MySQL type mapping used signed <code>TINYINT</code> (−128 to 127). Values ≥ 128 overflowed.</td>
+        <td>MYT01 <code>integer_types</code>: row "positive typical" (<code>col_byte = 128</code>) failed with error 1264 "Out of range value for column 'col_byte'". Validation: Access: 4, MySQL: 3.</td>
+        <td>After fix, MYT01 <code>integer_types</code>: 4/4 rows inserted including col_byte=128. Validation: Access: 4, MySQL: 4 ✓</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (uncommitted)</span><br>
+          <code>type_map</code> in <code>my_replicator.py</code>: type 2 mapping changed from <code>'TINYINT'</code> to <code>'TINYINT UNSIGNED'</code>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Resolved Defects (Committed)</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Defect</th>
+        <th>Root Cause</th>
+        <th>Observed Behavior</th>
+        <th>Verification</th>
+        <th>Status / Resolution</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>DAO.Fields errors, PK detection failures, FK creation failures, silent exception swallowing
+          <div class="affected">Affected: PG, MSSQL, MySQL</div>
+        </td>
+        <td>Multiple issues in schema discovery and FK creation: (1) <code>DAO.Fields</code> iteration used property access that failed on some field types; (2) primary key detection missed composite keys and certain index-based PKs; (3) foreign key creation failed when the referenced table lacked an explicit unique constraint; (4) several <code>except: pass</code> blocks silently swallowed real errors.</td>
+        <td>Tables with complex field types failed schema discovery. Some tables with valid primary keys were reported as having none. Foreign keys referencing tables without explicit UNIQUE constraints were silently skipped. Legitimate errors in DAO access were invisible.</td>
+        <td>TestHarness.accdb schemas replicate correctly. All 8 tables created with proper types. Foreign keys between related tables are verified.</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-07-28 (33b72e5)</span><br>
+          Commit <code>33b72e5</code>: "fix: DAO.Fields errors, PK detection, FK creation, and silent exception handling" — applied to all three <code>src/*.py</code>
+        </td>
+      </tr>
+      <tr>
+        <td><code>--create-views</code> combined with <code>--schema</code> caused connection failures
+          <div class="affected">Affected: PG, MSSQL, MySQL</div>
+        </td>
+        <td><code>create_sane_views()</code> assumed DAO and target-database connections were already open, but when called after <code>replicate_schema()</code> the connections had been closed. Also, <code>--create-views</code> was incorrectly placed in a mutually-exclusive argument group, blocking use with <code>--schema</code>.</td>
+        <td><code>--schema --create-views</code> either refused to run (argparse error) or failed with <code>'NoneType' object has no attribute 'TableDefs'</code> when views were created after schema.</td>
+        <td><code>--schema --create-views</code> now works as a single operation: creates schema, then opens fresh connections and creates views.</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-06-01 (80ebec3, 090b83f)</span><br>
+          <code>create_sane_views()</code> now opens its own connections. <code>--create-views</code> removed from mutually exclusive group. Applied to all three replicators.
+        </td>
+      </tr>
+      <tr>
+        <td>Foreign key infinite recursion loop when no PK/UNIQUE on referenced table
+          <div class="affected">Affected: PG, MSSQL, MySQL</div>
+        </td>
+        <td><code>create_foreign_key()</code> called <code>ensure_uniqueness_on_base_table()</code> to add a unique constraint on the referenced table. If that function returned <code>None</code> (couldn't create the constraint), the calling code entered an infinite recursive loop trying to re-ensure uniqueness.</td>
+        <td>Replication hung indefinitely when a foreign key referenced a table with no primary key and no suitable columns for a unique constraint. The program appeared frozen with no error message.</td>
+        <td>FKs referencing tables without PKs now log an error and skip — no infinite loop.</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-06-01 (v1.12/v1.40/v1.2)</span><br>
+          <code>create_foreign_key()</code> now checks for <code>None</code> return from <code>ensure_uniqueness_on_base_table()</code>, logs error, and skips. Applied to all three replicators.
+        </td>
+      </tr>
+      <tr>
+        <td>sync-deleted batch SQL statement construction error
+          <div class="affected">Affected: PG</div>
+        </td>
+        <td>Batch DELETE construction for sync-deleted had incorrect SQL statement assembly — the <code>WHERE (col1, col2) IN ((...), (...))</code> syntax was malformed for certain key-column configurations.</td>
+        <td>sync-deleted mode failed partway through large batches with SQL syntax errors.</td>
+        <td>Batch deletes across all key-column configurations produce valid SQL.</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-05-27 (1ec5d46)</span><br>
+          Commit <code>1ec5d46</code>: "correct syn-deleted batch sql statement constrcution"
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Pattern:</strong> The three most recent defects (dbGUID wrapper, MySQL GUID braces, MySQL TINYINT signed) were all discovered by TestHarness.accdb — an 8-table database covering every Access DAO data type systematically. The GUID defect in particular was a cross-cutting concern: the same <code>{guid {...}}</code> wrapper affected all three backends identically but manifested differently — PG and MSSQL silently rejected the rows, MySQL produced explicit errors. The fix pattern of applying type-conversion fixes in the shared <code>convert_dao_value_to_python()</code> function ensures all three replicators benefit from the same correction.
+  </div>
+
+  <div class="callout">
+    <strong>MySQL-specific risk:</strong> MySQL has no native GUID/UUID type that auto-normalizes. The <code>CHAR(36)</code> mapping is a deliberate design choice — it stores the string representation of a GUID. This means any normalization that PG and MSSQL handle natively (braces, case-folding, hyphen placement) must be done in the Python layer for MySQL. The two MySQL-specific fixes above (braces strip, TINYINT UNSIGNED) are examples of MySQL requiring explicit handling where other backends get it "for free" from their type systems.
+  </div>
+
+</div>
+
+<footer>
+  &copy; 2026 Ron O'Hara. All rights reserved.<br>
+  <a href="mailto:webmaster@sentuny.com">webmaster@sentuny.com</a>
+</footer>
+
+</body>
+</html>

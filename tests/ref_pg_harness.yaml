@@ -1,0 +1,9 @@
+DAO:
+  database: "C:\\Users\\ronoh\\TestHarness.accdb"
+
+postgresql:
+  host: "x360.sentuny.com"
+  port: 5432
+  database: "pg_ref_harness"
+  user: "replicator"
+  password: "syhunkea"

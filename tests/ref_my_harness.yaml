@@ -1,0 +1,9 @@
+DAO:
+  database: "C:\\Users\\ronoh\\TestHarness.accdb"
+
+mysql:
+  host: "x360.sentuny.com"
+  port: 3306
+  database: "my_ref_harness"
+  user: "replicator"
+  password: "bluewhale$54321"
