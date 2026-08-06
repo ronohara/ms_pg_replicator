@@ -135,8 +135,10 @@
 
 <div class="container">
 
-  <h2>Active Defects (Uncommitted — Fixed in Working Tree)</h2>
-  <p>These defects have been fixed in <code>src/*.py</code> but are not yet committed. Tested and verified via TestHarness.accdb (8-table type-coverage suite).</p>
+  <h2>Active Defects</h2>
+  <p>No active defects. All known issues have been resolved and committed.</p>
+
+  <h2>Resolved Defects (Committed)</h2>
 
   <table>
     <thead>
@@ -155,8 +157,8 @@
         </td>
         <td>DAO returns GUID values wrapped as <code>{guid {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}</code>. None of the three replicators stripped this wrapper before passing the value to the target database. PostgreSQL <code>UUID</code> type and MSSQL <code>UNIQUEIDENTIFIER</code> silently rejected these values, while MySQL <code>CHAR(36)</code> could not fit the 42-character wrapper.</td>
         <td>PGT01 <code>guid_types</code>: 0 rows inserted (all three rejected). MST01: same — 0 rows. MYT01: INSERT failed with "Data too long". Validation showed Access: 3, target: 0 for all three backends.</td>
-        <td>After fix, PGT01 8/8, MST01 8/8, MYT01 6/8 (two remaining MySQL-specific issues below). <code>guid_types</code> now inserts all 3 rows with clean GUID values in all three backends.</td>
-        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (uncommitted)</span><br>
+        <td>PGT01 8/8, MST01 8/8, MYT01 8/8 (after all three fixes). <code>guid_types</code> inserts all 3 rows with clean GUID values in all three backends.</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (0f9483c)</span><br>
           <code>convert_dao_value_to_python()</code> in all three <code>src/*.py</code>: strips <code>{guid </code> prefix and trailing <code>}</code> — <code>value = value[6:-1]</code><br>
           <strong>Design:</strong> Fix applied in <code>convert_dao_value_to_python()</code> — one location for all three replicators, before backend-specific literal conversion.
         </td>
@@ -167,8 +169,8 @@
         </td>
         <td>After stripping the <code>{guid {...}}</code> wrapper, the GUID still had curly braces — <code>{12345678-ABCD-EF01-2345-6789ABCDEF01}</code> is 38 characters. MySQL <code>CHAR(36)</code> only holds 36 characters. PostgreSQL <code>UUID</code> and MSSQL <code>UNIQUEIDENTIFIER</code> are native types that auto-normalize braces natively — MySQL has no such type.</td>
         <td>MYT01 <code>guid_types</code>: 2 of 3 INSERTs failed with error 1406 "Data too long for column 'col_guid'". Only rows without braces survived.</td>
-        <td>After fix, MYT01 <code>guid_types</code>: 3/3 rows inserted. Validation: Access: 3, MySQL: 3 ✓</td>
-        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (uncommitted)</span><br>
+        <td>MYT01 <code>guid_types</code>: 3/3 rows inserted. Validation: Access: 3, MySQL: 3 ✓</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (0f9483c)</span><br>
           <code>convert_dao_value_to_python()</code> in <code>my_replicator.py</code>: after <code>{guid {...}}</code> strip, also strips plain <code>{</code> <code>}</code> braces from 38-character GUID-like strings — <code>value = value[1:-1]</code>
         </td>
       </tr>
@@ -178,27 +180,11 @@
         </td>
         <td>Access DAO type 2 (<code>dbByte</code>) is an unsigned byte (0–255). MySQL type mapping used signed <code>TINYINT</code> (−128 to 127). Values ≥ 128 overflowed.</td>
         <td>MYT01 <code>integer_types</code>: row "positive typical" (<code>col_byte = 128</code>) failed with error 1264 "Out of range value for column 'col_byte'". Validation: Access: 4, MySQL: 3.</td>
-        <td>After fix, MYT01 <code>integer_types</code>: 4/4 rows inserted including col_byte=128. Validation: Access: 4, MySQL: 4 ✓</td>
-        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (uncommitted)</span><br>
+        <td>MYT01 <code>integer_types</code>: 4/4 rows inserted including col_byte=128. Validation: Access: 4, MySQL: 4 ✓</td>
+        <td><span class="badge badge-fix">✓ Fixed — 2026-08-06 (0f9483c)</span><br>
           <code>type_map</code> in <code>my_replicator.py</code>: type 2 mapping changed from <code>'TINYINT'</code> to <code>'TINYINT UNSIGNED'</code>
         </td>
       </tr>
-    </tbody>
-  </table>
-
-  <h2>Resolved Defects (Committed)</h2>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Defect</th>
-        <th>Root Cause</th>
-        <th>Observed Behavior</th>
-        <th>Verification</th>
-        <th>Status / Resolution</th>
-      </tr>
-    </thead>
-    <tbody>
       <tr>
         <td>DAO.Fields errors, PK detection failures, FK creation failures, silent exception swallowing
           <div class="affected">Affected: PG, MSSQL, MySQL</div>
