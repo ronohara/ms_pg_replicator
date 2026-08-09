@@ -64,6 +64,13 @@ with zero manual steps to avoid that source of errors.
 Lots of people are extracting Excel or CSV files and feeding them into an AI platform. That works of course, but is normally a manual approach - fine for experiments, but not so good for regular operation.
 
 
+## Related Products
+
+- [www.sentuny.com](https://www.sentuny.com) — Main Sentuny website
+- [replicator-ng.sentuny.com](https://replicator-ng.sentuny.com) — Replicator Next Generation
+- [workbench.sentuny.com](https://workbench.sentuny.com) — Statistician's Workbench
+- [msaccess-endpoint.sentuny.com](https://msaccess-endpoint.sentuny.com) — MS Access Endpoint
+
 ## Installation
 
 Refer to the installation notes in the relevant PDF file in
